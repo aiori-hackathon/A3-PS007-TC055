@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PS-007 | Privacy-Aware IPv6 IoT Security Monitor</title>
+  <!-- Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Custom Cyber Theme -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- SIDEBAR NAVIGATION -->
+  <div id="sidebar-wrapper">
+    <div class="sidebar-heading">
+      <div class="sidebar-brand-title">
+        <i class="bi bi-shield-check text-info"></i>
+        <span>PS-007 MONITOR</span>
+      </div>
+      <div class="d-flex justify-content-between align-items-center mt-2">
+        <span class="sidebar-badge">IPv6-IoT-SEC</span>
+        <span class="badge bg-dark border border-secondary text-secondary" style="font-size:0.65rem;" id="platform-badge">SIM-MODE</span>
+      </div>
+    </div>
+
+    <div class="sidebar-nav">
+      <a href="#overview" class="nav-link-custom active" data-target="overview-section">
+        <i class="bi bi-grid-1x2"></i> <span>Overview</span>
+      </a>
+      <a href="#devices" class="nav-link-custom" data-target="devices-section">
+        <i class="bi bi-cpu"></i> <span>IoT Devices</span>
+      </a>
+      <a href="#monitoring" class="nav-link-custom" data-target="monitoring-section">
+        <i class="bi bi-activity"></i> <span>Network Monitoring</span>
+      </a>
+      <a href="#rotation" class="nav-link-custom" data-target="rotation-section">
+        <i class="bi bi-arrow-repeat"></i> <span>IPv6 Address Rotation</span>
+      </a>
+      <a href="#alerts" class="nav-link-custom" data-target="alerts-section">
+        <i class="bi bi-exclamation-triangle"></i> <span>Security Alerts</span>
+        <span class="badge bg-danger ms-auto rounded-pill" id="sidebar-alert-badge" style="display:none;">0</span>
+      </a>
+      <a href="#simulation" class="nav-link-custom" data-target="simulation-section">
+        <i class="bi bi-radioactive"></i> <span>Attack Simulation</span>
+      </a>
+      <a href="#privacy" class="nav-link-custom" data-target="privacy-section">
+        <i class="bi bi-incognito"></i> <span>Privacy & Tenants</span>
+      </a>
+      <a href="#evaluation" class="nav-link-custom" data-target="evaluation-section">
+        <i class="bi bi-graph-up-arrow"></i> <span>Evaluation</span>
+      </a>
+      <a href="#settings" class="nav-link-custom" data-target="settings-section">
+        <i class="bi bi-gear"></i> <span>Settings</span>
+      </a>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="d-flex align-items-center justify-content-between">
+        <div>
+          <span class="pulse-dot pulse-green" id="engine-pulse"></span>
+          <span id="engine-status-text">Engine Online</span>
+        </div>
+        <small class="text-secondary" id="active-tenant-indicator">tenant-alpha</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN PAGE WRAPPER -->
+  <div id="page-content-wrapper">
+    <!-- TOP NAVBAR -->
+    <header class="top-navbar">
+      <div>
+        <h1 class="page-title" id="page-heading">System Overview</h1>
+        <div class="page-subtitle" id="page-subheading">Privacy-Preserving IPv6 IoT Security & Ephemeral Pseudonym Correlation</div>
+      </div>
+      <div class="d-flex align-items-center gap-3">
+        <div class="input-group input-group-sm" style="width: 200px;">
+          <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-buildings"></i></span>
+          <select class="form-select border-start-0" id="tenant-selector" style="font-size:0.8rem;">
+            <option value="tenant-alpha" selected>Tenant Alpha (Default)</option>
+            <option value="tenant-beta">Tenant Beta (Isolated)</option>
+          </select>
+        </div>
+        <button class="btn btn-sm btn-outline-custom" id="btn-refresh-now" title="Refresh Now">
+          <i class="bi bi-arrow-clockwise"></i> Refresh
+        </button>
+        <button class="btn btn-sm btn-primary-custom" id="btn-toggle-auto-refresh">
+          <i class="bi bi-play-fill"></i> Live Auto-Sync
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="main-container">
+
+      <!-- ================= 1. OVERVIEW SECTION ================= -->
+      <section id="overview-section" class="dashboard-section active-section">
+        <!-- Metric Cards Grid -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-4 col-xl-2">
+            <div class="card-metric">
+              <div class="metric-title"><i class="bi bi-cpu"></i> Total Devices</div>
+              <div class="metric-value" id="card-total-devices">5</div>
+              <div class="metric-subtext text-success"><i class="bi bi-check-circle"></i> 5 Emulated Nodes</div>
+            </div>
+          </div>
+          <div class="col-md-4 col-xl-2">
+            <div class="card-metric">
+              <div class="metric-title"><i class="bi bi-key"></i> Active Sessions</div>
+              <div class="metric-value text-primary" id="card-active-sessions">5</div>
+              <div class="metric-subtext text-muted" id="card-ttl-info">TTL: 120s Rotating</div>
+            </div>
+          </div>
+          <div class="col-md-4 col-xl-2">
+            <div class="card-metric">
+              <div class="metric-title"><i class="bi bi-arrow-repeat"></i> IPv6 Rotations</div>
+              <div class="metric-value text-info" id="card-rotations-count">0</div>
+              <div class="metric-subtext text-muted">RFC 4941 Privacy Ext</div>
+            </div>
+          </div>
+          <div class="col-md-4 col-xl-2">
+            <div class="card-metric">
+              <div class="metric-title"><i class="bi bi-exclamation-octagon"></i> Total Alerts</div>
+              <div class="metric-value text-danger" id="card-total-alerts">0</div>
+              <div class="metric-subtext" id="card-alerts-subtext">Security Violations</div>
+            </div>
+          </div>
+          <div class="col-md-4 col-xl-2">
+            <div class="card-metric">
+              <div class="metric-title"><i class="bi bi-router"></i> Rogue RAs</div>
+              <div class="metric-value text-danger" id="card-rogue-ra">0</div>
+              <div class="metric-subtext text-muted">Unauthorized Routers</div>
+            </div>
+          </div>
+          <div class="col-md-4 col-xl-2">
+            <div class="card-metric">
+              <div class="metric-title"><i class="bi bi-broadcast"></i> NDP Anomalies</div>
+              <div class="metric-value text-warning" id="card-ndp-anomalies">0</div>
+              <div class="metric-subtext text-muted">Flooding Bursts</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Network Health & Activity Chart -->
+        <div class="row g-3 mb-4">
+          <div class="col-lg-4">
+            <div class="health-meter-box h-100 d-flex flex-column justify-content-between">
+              <div>
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <h6 class="fw-bold mb-0 text-uppercase" style="font-size:0.8rem; letter-spacing:0.05em; color:var(--text-muted);">
+                    <i class="bi bi-heart-pulse"></i> Network Security Health
+                  </h6>
+                  <span class="badge bg-success health-status-tag" id="health-tag">HEALTHY</span>
+                </div>
+                <div class="d-flex align-items-baseline gap-2 mb-2">
+                  <div class="metric-value" style="font-size: 2.75rem;" id="health-score-val">100</div>
+                  <span class="text-muted fw-bold">/ 100</span>
+                </div>
+                <div class="progress mb-3" style="height: 10px;">
+                  <div class="progress-bar bg-success" id="health-bar" role="progressbar" style="width: 100%;"></div>
+                </div>
+                <p class="small text-muted mb-0" id="health-desc">
+                  All 5 virtual IoT devices authenticated. No rogue router advertisements or NDP flooding anomalies detected.
+                </p>
+              </div>
+              <div class="pt-3 border-top mt-3">
+                <div class="d-flex justify-content-between small text-muted mb-1">
+                  <span>Packet Sniffing Mode:</span>
+                  <span class="fw-semibold text-dark" id="overview-mode-label">Simulation Pipeline</span>
+                </div>
+                <div class="d-flex justify-content-between small text-muted">
+                  <span>Monitoring Engine:</span>
+                  <span class="fw-semibold text-success"><i class="bi bi-shield-shaded"></i> Scapy ICMPv6 Inspector</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-8">
+            <div class="chart-box">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold mb-0 text-uppercase" style="font-size:0.8rem; letter-spacing:0.05em; color:var(--text-muted);">
+                  <i class="bi bi-graph-up"></i> Real-Time ICMPv6 Packet Rate (pkts/sec)
+                </h6>
+                <small class="text-muted" id="chart-rate-label">0.0 pps</small>
+              </div>
+              <div style="height: 240px; position: relative;">
+                <canvas id="trafficLineChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Device Snapshot & Recent Security Alerts -->
+        <div class="row g-3">
+          <div class="col-lg-7">
+            <div class="card bg-white border rounded-3 p-3 shadow-sm h-100">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0 text-uppercase" style="font-size:0.8rem; letter-spacing:0.05em; color:var(--text-muted);">
+                  <i class="bi bi-hdd-network"></i> IoT Device Security Status (5 Devices)
+                </h6>
+                <a href="#devices" class="btn btn-sm btn-outline-custom text-decoration-none view-tab-link" data-target="devices-section">Manage Devices</a>
+              </div>
+              <div class="table-responsive">
+                <table class="table-custom" id="overview-devices-table">
+                  <thead>
+                    <tr>
+                      <th>Device</th>
+                      <th>Local Pseudonym</th>
+                      <th>Temporary IPv6 Address</th>
+                      <th>NDP Rate</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Injected by dashboard.js -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-5">
+            <div class="card bg-white border rounded-3 p-3 shadow-sm h-100">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0 text-uppercase" style="font-size:0.8rem; letter-spacing:0.05em; color:var(--text-muted);">
+                  <i class="bi bi-shield-exclamation"></i> Recent Security Events
+                </h6>
+                <a href="#alerts" class="btn btn-sm btn-outline-custom text-decoration-none view-tab-link" data-target="alerts-section">All Alerts</a>
+              </div>
+              <div id="overview-alerts-list">
+                <!-- Injected by dashboard.js -->
+                <div class="text-center text-muted py-4 small">
+                  <i class="bi bi-shield-check text-success fs-3 d-block mb-1"></i>
+                  Zero active security violations. Network is safe.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2. IOT DEVICES SECTION ================= -->
+      <section id="devices-section" class="dashboard-section">
+        <div class="card bg-white border rounded-3 p-4 shadow-sm mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h5 class="fw-bold mb-1">Connected IoT Devices Management</h5>
+              <p class="text-muted small mb-0">
+                5 virtual devices monitored under local ephemeral pseudonyms. No MAC or hardware fingerprinting retained.
+              </p>
+            </div>
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm btn-primary-custom" id="btn-auth-all-devices">
+                <i class="bi bi-key-fill"></i> Authenticate All 5
+              </button>
+              <button class="btn btn-sm btn-outline-custom" id="btn-rotate-all-devices">
+                <i class="bi bi-arrow-repeat"></i> Rotate All Addresses
+              </button>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table-custom" id="full-devices-table">
+              <thead>
+                <tr>
+                  <th>Device Name</th>
+                  <th>Type</th>
+                  <th>Local Pseudonym</th>
+                  <th>Current IPv6 Address</th>
+                  <th>Auth Status</th>
+                  <th>Rotations</th>
+                  <th>NDP Rate</th>
+                  <th>Security</th>
+                  <th class="text-end">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="full-devices-tbody">
+                <!-- Dynamically loaded -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card bg-white border rounded-3 p-4 shadow-sm">
+          <h6 class="fw-bold text-uppercase mb-3" style="font-size:0.8rem; color:var(--text-muted);">
+            <i class="bi bi-info-circle"></i> Privacy-Preserving Device Correlation Mechanism
+          </h6>
+          <div class="row g-3 small text-muted">
+            <div class="col-md-4">
+              <div class="p-3 bg-light rounded-2 border">
+                <strong class="d-block text-dark mb-1">1. Cryptographic Handshake</strong>
+                Devices authenticate using short-lived tokens and are assigned an ephemeral local pseudonym (e.g. <code>DEV-P01</code>).
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-3 bg-light rounded-2 border">
+                <strong class="d-block text-dark mb-1">2. Zero Fingerprinting</strong>
+                No IEEE 802 MAC addresses, hardware serials, or behavioural fingerprints are parsed or stored.
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="p-3 bg-light rounded-2 border">
+                <strong class="d-block text-dark mb-1">3. Forward & Backward Unlinkability</strong>
+                When addresses rotate, re-authentication preserves the local pseudonym without exposing cross-network linkability.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 3. NETWORK MONITORING SECTION ================= -->
+      <section id="monitoring-section" class="dashboard-section">
+        <div class="row g-3 mb-4">
+          <div class="col-md-3">
+            <div class="card-metric">
+              <div class="metric-title">RA Messages</div>
+              <div class="metric-value text-primary" id="counter-ra">0</div>
+              <div class="metric-subtext">Router Advertisements (134)</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card-metric">
+              <div class="metric-title">RS Messages</div>
+              <div class="metric-value text-info" id="counter-rs">0</div>
+              <div class="metric-subtext">Router Solicitations (133)</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card-metric">
+              <div class="metric-title">NS Messages</div>
+              <div class="metric-value text-secondary" id="counter-ns">0</div>
+              <div class="metric-subtext">Neighbor Solicitations (135)</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card-metric">
+              <div class="metric-title">NA Messages</div>
+              <div class="metric-value text-secondary" id="counter-na">0</div>
+              <div class="metric-subtext">Neighbor Advertisements (136)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-lg-8">
+            <div class="card bg-white border rounded-3 p-3 shadow-sm h-100">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0 text-uppercase" style="font-size:0.8rem; letter-spacing:0.05em; color:var(--text-muted);">
+                  <i class="bi bi-list-check"></i> Live ICMPv6 Packet Event Stream (Scapy DPI)
+                </h6>
+                <span class="badge bg-light text-dark border" id="packet-total-badge">Total Packets: 0</span>
+              </div>
+              <div class="table-responsive" style="max-height: 440px; overflow-y: auto;">
+                <table class="table-custom" id="packet-stream-table">
+                  <thead style="position: sticky; top: 0; z-index: 1;">
+                    <tr>
+                      <th>Time</th>
+                      <th>Source IPv6</th>
+                      <th>Destination IPv6</th>
+                      <th>ICMPv6 Message Type</th>
+                      <th>Pseudonym</th>
+                      <th>Size</th>
+                      <th>Attack Flag</th>
+                    </tr>
+                  </thead>
+                  <tbody id="packet-stream-tbody">
+                    <!-- Streamed items -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4">
+            <div class="card bg-white border rounded-3 p-3 shadow-sm h-100">
+              <h6 class="fw-bold mb-3 text-uppercase" style="font-size:0.8rem; letter-spacing:0.05em; color:var(--text-muted);">
+                <i class="bi bi-pie-chart"></i> ICMPv6 Protocol Breakdown
+              </h6>
+              <div style="height: 250px; position: relative;">
+                <canvas id="icmpDoughnutChart"></canvas>
+              </div>
+              <div class="mt-3 p-2 bg-light border rounded small">
+                <div class="d-flex justify-content-between mb-1">
+                  <span class="text-muted">Trusted Router:</span>
+                  <code class="fw-semibold">2001:db8:1::1</code>
+                </div>
+                <div class="d-flex justify-content-between">
+                  <span class="text-muted">Network Prefix:</span>
+                  <code class="fw-semibold">2001:db8:1::/64</code>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 4. IPV6 ADDRESS ROTATION SECTION ================= -->
+      <section id="rotation-section" class="dashboard-section">
+        <div class="card bg-white border rounded-3 p-4 shadow-sm mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h5 class="fw-bold mb-1">RFC 4941 IPv6 Address Rotation Engine</h5>
+              <p class="text-muted small mb-0">
+                Demonstrates device pseudonym continuity: when an IoT device changes its temporary IPv6 address, its local pseudonym remains constant.
+              </p>
+            </div>
+          </div>
+
+          <div class="table-responsive mb-4">
+            <table class="table-custom">
+              <thead>
+                <tr>
+                  <th>Device Name</th>
+                  <th>Local Pseudonym</th>
+                  <th>Current Active IPv6</th>
+                  <th>Total Rotations</th>
+                  <th>Session Status</th>
+                  <th class="text-end">Manual Trigger</th>
+                </tr>
+              </thead>
+              <tbody id="rotation-devices-tbody">
+                <!-- Injected by devices.js -->
+              </tbody>
+            </table>
+          </div>
+
+          <h6 class="fw-bold text-uppercase mb-3 mt-4" style="font-size:0.8rem; color:var(--text-muted);">
+            <i class="bi bi-clock-history"></i> Address Rotation Audit Log
+          </h6>
+          <div class="table-responsive">
+            <table class="table-custom" id="rotations-history-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Device Name</th>
+                  <th>Local Pseudonym</th>
+                  <th>Old Temporary IPv6</th>
+                  <th>New Temporary IPv6</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="rotations-history-tbody">
+                <!-- Dynamically loaded -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 5. SECURITY ALERTS SECTION ================= -->
+      <section id="alerts-section" class="dashboard-section">
+        <div class="card bg-white border rounded-3 p-4 shadow-sm">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h5 class="fw-bold mb-1">Security Alerts & Intrusion Detection</h5>
+              <p class="text-muted small mb-0">
+                Real-time alerts for Rogue Router Advertisements and Abnormal Neighbor Discovery Floods.
+              </p>
+            </div>
+            <div class="d-flex gap-2">
+              <select class="form-select form-select-sm" id="alert-severity-filter" style="width: 140px;">
+                <option value="ALL">All Severities</option>
+                <option value="CRITICAL">Critical Only</option>
+                <option value="HIGH">High Only</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table-custom" id="full-alerts-table">
+              <thead>
+                <tr>
+                  <th>Alert ID</th>
+                  <th>Severity</th>
+                  <th>Attack Type</th>
+                  <th>Source IPv6</th>
+                  <th>Correlated Pseudonym</th>
+                  <th>Timestamp</th>
+                  <th>Detection Reason</th>
+                  <th>Latency</th>
+                  <th class="text-end">Action</th>
+                </tr>
+              </thead>
+              <tbody id="full-alerts-tbody">
+                <!-- Injected by alerts.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 6. ATTACK SIMULATION SECTION ================= -->
+      <section id="simulation-section" class="dashboard-section">
+        <div class="row g-4 mb-4">
+          <!-- ATTACK 1: ROGUE RA -->
+          <div class="col-lg-6">
+            <div class="card bg-white border rounded-3 p-4 shadow-sm h-100">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                  <h5 class="fw-bold mb-1 text-danger"><i class="bi bi-shield-slash"></i> Attack 1: Rogue Router Advertisement</h5>
+                  <p class="text-muted small mb-0">Unauthorized rogue virtual router broadcasting malicious IPv6 RAs.</p>
+                </div>
+                <span class="badge bg-secondary" id="badge-sim-rogue-ra">IDLE</span>
+              </div>
+              <hr>
+              <div class="small mb-3">
+                <div class="row g-2">
+                  <div class="col-6">
+                    <label class="form-label small text-muted">Rogue Source IP:</label>
+                    <input type="text" class="form-control form-control-sm font-monospace" value="2001:db8:1::bad:1" readonly>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label small text-muted">Malicious Prefix:</label>
+                    <input type="text" class="form-control form-control-sm font-monospace" value="2001:db8:666::/64" readonly>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex gap-2 mt-auto">
+                <button class="btn btn-sm btn-danger-custom" id="btn-start-rogue-ra">
+                  <i class="bi bi-play-fill"></i> Start Rogue RA
+                </button>
+                <button class="btn btn-sm btn-outline-custom" id="btn-stop-rogue-ra">
+                  <i class="bi bi-stop-fill"></i> Stop
+                </button>
+                <button class="btn btn-sm btn-outline-danger ms-auto" id="btn-burst-rogue-ra" title="Send 1 Attack Packet">
+                  <i class="bi bi-lightning-fill"></i> 1-Shot Burst
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ATTACK 2: NDP FLOOD -->
+          <div class="col-lg-6">
+            <div class="card bg-white border rounded-3 p-4 shadow-sm h-100">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                  <h5 class="fw-bold mb-1 text-warning"><i class="bi bi-tsunami"></i> Attack 2: Abnormal NDP Flooding</h5>
+                  <p class="text-muted small mb-0">Floods excessive Neighbor Solicitations / Advertisements.</p>
+                </div>
+                <span class="badge bg-secondary" id="badge-sim-ndp-flood">IDLE</span>
+              </div>
+              <hr>
+              <div class="small mb-3">
+                <div class="row g-2">
+                  <div class="col-6">
+                    <label class="form-label small text-muted">Flood Source Node:</label>
+                    <select class="form-select form-select-sm font-monospace" id="sim-ndp-source-select">
+                      <option value="2001:db8:1::104">Smart Speaker (2001:db8:1::104)</option>
+                      <option value="2001:db8:1::101">Smart Camera (2001:db8:1::101)</option>
+                      <option value="2001:db8:1::bad:99">Attacker External (2001:db8:1::bad:99)</option>
+                    </select>
+                  </div>
+                  <div class="col-6">
+                    <label class="form-label small text-muted">Flood Rate: <span id="ndp-rate-slider-val" class="fw-bold">25 pps</span></label>
+                    <input type="range" class="form-range" id="ndp-rate-slider" min="10" max="60" value="25">
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex gap-2 mt-auto">
+                <button class="btn btn-sm btn-warning text-dark fw-semibold" id="btn-start-ndp-flood">
+                  <i class="bi bi-play-fill"></i> Start NDP Flood
+                </button>
+                <button class="btn btn-sm btn-outline-custom" id="btn-stop-ndp-flood">
+                  <i class="bi bi-stop-fill"></i> Stop
+                </button>
+                <button class="btn btn-sm btn-outline-warning text-dark ms-auto" id="btn-burst-ndp-flood" title="Send 25-packet burst">
+                  <i class="bi bi-lightning-fill"></i> 25-Pkt Burst
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TRAFFIC & DEVICES CONTROLLERS -->
+        <div class="row g-4">
+          <div class="col-lg-6">
+            <div class="card bg-white border rounded-3 p-4 shadow-sm">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold mb-0"><i class="bi bi-activity text-success"></i> Normal Baseline Traffic Generator</h6>
+                <span class="badge bg-secondary" id="badge-sim-normal">IDLE</span>
+              </div>
+              <p class="text-muted small mb-3">Sends benign periodic RAs from the trusted router and RS/NS/NA heartbeats from IoT devices.</p>
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-primary-custom" id="btn-start-normal-traffic">
+                  <i class="bi bi-play-fill"></i> Start Normal Traffic
+                </button>
+                <button class="btn btn-sm btn-outline-custom" id="btn-stop-normal-traffic">
+                  <i class="bi bi-stop-fill"></i> Stop
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="card bg-white border rounded-3 p-4 shadow-sm">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="fw-bold mb-0"><i class="bi bi-sliders text-primary"></i> 5 Virtual IoT Devices Lifecycle</h6>
+                <span class="badge bg-secondary" id="badge-sim-devices">IDLE</span>
+              </div>
+              <p class="text-muted small mb-3">Controls the automated background activity loops of all 5 virtual IoT devices.</p>
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-primary-custom" id="btn-start-all-devices">
+                  <i class="bi bi-play-fill"></i> Start All 5 Devices
+                </button>
+                <button class="btn btn-sm btn-outline-custom" id="btn-stop-all-devices">
+                  <i class="bi bi-stop-fill"></i> Stop All Devices
+                </button>
+                <button class="btn btn-sm btn-danger ms-auto" id="btn-stop-everything">
+                  <i class="bi bi-x-circle"></i> Stop All Simulations
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 7. PRIVACY & TENANT ISOLATION SECTION ================= -->
+      <section id="privacy-section" class="dashboard-section">
+        <div class="row g-3 mb-4">
+          <div class="col-md-3">
+            <div class="card-metric">
+              <div class="metric-title">Active Pseudonyms</div>
+              <div class="metric-value text-primary" id="priv-active-count">0</div>
+              <div class="metric-subtext">Ephemeral Local Mappings</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card-metric">
+              <div class="metric-title">Expired Mappings</div>
+              <div class="metric-value text-secondary" id="priv-expired-count">0</div>
+              <div class="metric-subtext">Awaiting Auto-Purge</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card-metric">
+              <div class="metric-title">Purged Records</div>
+              <div class="metric-value text-success" id="priv-purged-count">0</div>
+              <div class="metric-subtext">Securely Erased From Disk</div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="card-metric">
+              <div class="metric-title">Session TTL</div>
+              <div class="metric-value text-info" id="priv-ttl-val">120s</div>
+              <div class="metric-subtext">Configurable Invalidation Window</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-lg-8">
+            <div class="card bg-white border rounded-3 p-4 shadow-sm">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0 text-uppercase" style="font-size:0.8rem; letter-spacing:0.05em; color:var(--text-muted);">
+                  <i class="bi bi-person-badge"></i> Active Pseudonym Bindings & TTL Expiration
+                </h6>
+                <button class="btn btn-sm btn-outline-danger" id="btn-purge-expired">
+                  <i class="bi bi-trash"></i> Force Purge Expired
+                </button>
+              </div>
+              <div class="table-responsive">
+                <table class="table-custom" id="privacy-mappings-table">
+                  <thead>
+                    <tr>
+                      <th>Pseudonym</th>
+                      <th>Device Name</th>
+                      <th>Current IPv6 Address</th>
+                      <th>Assigned Time</th>
+                      <th>TTL Remaining</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="privacy-mappings-tbody">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4">
+            <div class="card bg-white border rounded-3 p-4 shadow-sm h-100">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="fw-bold mb-0 text-uppercase" style="font-size:0.8rem; letter-spacing:0.05em; color:var(--text-muted);">
+                  <i class="bi bi-shield-check"></i> Tenant Isolation Test
+                </h6>
+                <button class="btn btn-sm btn-primary-custom" id="btn-run-isolation-test">
+                  <i class="bi bi-play"></i> Run Test
+                </button>
+              </div>
+              <p class="small text-muted mb-3">
+                Verifies strict namespace isolation: Tenant Alpha cannot correlate, query, or resolve Tenant Beta sessions or addresses.
+              </p>
+              <div id="isolation-test-results">
+                <div class="p-3 bg-light rounded text-center small text-muted">
+                  Click 'Run Test' to verify multi-tenant isolation.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 8. EVALUATION SECTION ================= -->
+      <section id="evaluation-section" class="dashboard-section">
+        <div class="card bg-white border rounded-3 p-4 shadow-sm mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h5 class="fw-bold mb-1">Detection Evaluation & Verification Metrics</h5>
+              <p class="text-muted small mb-0">
+                Measures actual detection accuracy, precision, recall, and latency from injected packets.
+              </p>
+            </div>
+            <button class="btn btn-primary-custom" id="btn-run-benchmark">
+              <i class="bi bi-lightning-charge-fill"></i> Run Evaluation Benchmark Suite
+            </button>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-3">
+              <div class="card-metric border-start border-4 border-success">
+                <div class="metric-title">Detection Rate (Recall)</div>
+                <div class="metric-value text-success" id="eval-recall">100.0%</div>
+                <div class="metric-subtext">TP / (TP + FN)</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card-metric border-start border-4 border-primary">
+                <div class="metric-title">Precision</div>
+                <div class="metric-value text-primary" id="eval-precision">100.0%</div>
+                <div class="metric-subtext">TP / (TP + FP)</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card-metric border-start border-4 border-info">
+                <div class="metric-title">False Positive Rate (FPR)</div>
+                <div class="metric-value text-info" id="eval-fpr">0.0%</div>
+                <div class="metric-subtext">FP / (FP + TN)</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card-metric border-start border-4 border-warning">
+                <div class="metric-title">Avg Detection Latency</div>
+                <div class="metric-value text-dark" id="eval-latency">0.82 ms</div>
+                <div class="metric-subtext">Packet Inspection Time</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Confusion Matrix Table -->
+          <div class="row g-4">
+            <div class="col-lg-6">
+              <h6 class="fw-bold text-uppercase mb-3" style="font-size:0.8rem; color:var(--text-muted);">
+                <i class="bi bi-table"></i> Real Confusion Matrix (Benchmark Test Results)
+              </h6>
+              <table class="table table-bordered text-center align-middle" style="font-size:0.85rem;">
+                <thead class="table-light">
+                  <tr>
+                    <th></th>
+                    <th>Predicted Attack</th>
+                    <th>Predicted Benign</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th class="table-light">Actual Attack</th>
+                    <td class="bg-success-subtle fw-bold text-success fs-5" id="cm-tp">35 (TP)</td>
+                    <td class="bg-light text-muted fs-6" id="cm-fn">0 (FN)</td>
+                  </tr>
+                  <tr>
+                    <th class="table-light">Actual Benign</th>
+                    <td class="bg-light text-muted fs-6" id="cm-fp">0 (FP)</td>
+                    <td class="bg-info-subtle fw-bold text-primary fs-5" id="cm-tn">25 (TN)</td>
+                  </tr>
+                </tbody>
+              </table>
+              <small class="text-muted d-block mt-2">
+                * Note: Benchmark transmits 25 benign packets, 5 Rogue RAs, and 30 NDP flood packets into the live packet queue.
+              </small>
+            </div>
+
+            <div class="col-lg-6">
+              <h6 class="fw-bold text-uppercase mb-3" style="font-size:0.8rem; color:var(--text-muted);">
+                <i class="bi bi-bar-chart"></i> Evaluation Metrics Visual
+              </h6>
+              <div style="height: 200px; position: relative;">
+                <canvas id="evaluationBarChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 9. SETTINGS SECTION ================= -->
+      <section id="settings-section" class="dashboard-section">
+        <div class="card bg-white border rounded-3 p-4 shadow-sm mb-4">
+          <h5 class="fw-bold mb-3">System & Detection Engine Configuration</h5>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">Trusted Default Router IPv6 Whitelist</label>
+              <input type="text" class="form-control form-control-sm font-monospace" value="2001:db8:1::1, fe80::1" readonly>
+              <div class="form-text">Any Router Advertisement from outside this whitelist is instantly flagged as CRITICAL.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">Authorized IPv6 Subnet Prefix</label>
+              <input type="text" class="form-control form-control-sm font-monospace" value="2001:db8:1::/64" readonly>
+              <div class="form-text">Legitimate prefix distributed via trusted SLAAC advertisements.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">NDP Message Rate Anomaly Threshold</label>
+              <div class="input-group input-group-sm">
+                <input type="number" class="form-control" value="6" readonly>
+                <span class="input-group-text">packets / sec</span>
+              </div>
+              <div class="form-text">Sliding window length: 3.0 seconds.</div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">Session & Pseudonym TTL</label>
+              <div class="input-group input-group-sm">
+                <input type="number" class="form-control" value="120" readonly>
+                <span class="input-group-text">seconds</span>
+              </div>
+              <div class="form-text">Mappings older than TTL are automatically expired and purged.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card bg-white border rounded-3 p-4 shadow-sm">
+          <h6 class="fw-bold mb-2">Linux Network Namespaces (UTM / Ubuntu ARM64)</h6>
+          <p class="text-muted small mb-3">
+            When running on Linux or inside an Ubuntu ARM64 UTM Virtual Machine, use the generated shell script to create physical virtual ethernet interfaces and namespaces:
+          </p>
+          <pre class="p-3 bg-dark text-light rounded font-monospace small mb-0"><code># To create br-iot0 and namespaces ns-mon, ns-iot1..5, ns-attacker:
+sudo bash setup_linux_netns.sh
+
+# To start the monitor on the bridge interface inside Linux:
+python3 backend/app.py --port 5005</code></pre>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Bootstrap 5 Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
+  <!-- Application JS Modules -->
+  <script src="js/dashboard.js"></script>
+  <script src="js/devices.js"></script>
+  <script src="js/monitoring.js"></script>
+  <script src="js/alerts.js"></script>
+</body>
+</html>
+
